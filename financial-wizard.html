@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>درخواست خدمات مالی و حسابداری</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { font-family: 'Vazirmatn', sans-serif; }
+  
+  body {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #0f3460 100%);
+    min-height: 100vh;
+  }
+
+  .glass {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .glass-card {
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+  }
+
+  .glass-card:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(99,179,237,0.5);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(99,179,237,0.3);
+    transform: translateY(-2px);
+  }
+
+  .glass-card.selected {
+    background: rgba(59,130,246,0.25);
+    border-color: rgba(99,179,237,0.8);
+    box-shadow: 0 8px 32px rgba(59,130,246,0.3), 0 0 0 2px rgba(99,179,237,0.5);
+  }
+
+  .type-card {
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(16px);
+    border: 2px solid rgba(255,255,255,0.1);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+
+  .type-card:hover {
+    background: rgba(255,255,255,0.13);
+    border-color: rgba(99,179,237,0.6);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(99,179,237,0.4);
+  }
+
+  .type-card.selected {
+    background: rgba(59,130,246,0.3);
+    border-color: #3b82f6;
+    box-shadow: 0 12px 40px rgba(59,130,246,0.4), 0 0 0 2px rgba(59,130,246,0.6);
+    transform: translateY(-4px) scale(1.02);
+  }
+
+  .step-dot {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+    transition: all 0.4s ease;
+    position: relative;
+    z-index: 2;
+  }
+
+  .step-dot.active {
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    box-shadow: 0 0 20px rgba(59,130,246,0.6);
+    color: white;
+  }
+
+  .step-dot.done {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 0 16px rgba(16,185,129,0.5);
+  }
+
+  .step-dot.pending {
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.4);
+    border: 2px solid rgba(255,255,255,0.15);
+  }
+
+  .step-line {
+    height: 2px;
+    flex: 1;
+    background: rgba(255,255,255,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .step-line-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #3b82f6);
+    width: 0%;
+    transition: width 0.6s ease;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #3b82f6, #06b6d4);
+    border-radius: 2px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border: none;
+    color: white;
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(59,130,246,0.4);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(59,130,246,0.5);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-secondary {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7);
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.14);
+    color: white;
+    border-color: rgba(255,255,255,0.3);
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    color: white;
+    padding: 16px 40px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(16,185,129,0.4);
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(16,185,129,0.5);
+  }
+
+  .input-field {
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    color: white;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 15px;
+    width: 100%;
+    transition: all 0.3s ease;
+    outline: none;
+    font-family: 'Vazirmatn', sans-serif;
+  }
+
+  .input-field::placeholder { color: rgba(255,255,255,0.3); }
+
+  .input-field:focus {
+    border-color: rgba(59,130,246,0.7);
+    background: rgba(255,255,255,0.1);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+  }
+
+  .input-field.error {
+    border-color: rgba(239,68,68,0.7);
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.15);
+  }
+
+  .error-msg {
+    color: #f87171;
+    font-size: 13px;
+    margin-top: 6px;
+    display: none;
+  }
+
+  .error-msg.show { display: block; }
+
+  .category-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(147,197,253,0.7);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .service-chip {
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.75);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+  }
+
+  .service-chip:hover {
+    background: rgba(59,130,246,0.15);
+    border-color: rgba(99,179,237,0.5);
+    color: white;
+  }
+
+  .service-chip.selected {
+    background: rgba(59,130,246,0.25);
+    border-color: #60a5fa;
+    color: #93c5fd;
+  }
+
+  .service-chip.selected .chip-check {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .chip-check {
+    width: 18px; height: 18px;
+    background: #3b82f6;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.2s ease;
+  }
+
+  .chip-check svg { width: 11px; height: 11px; }
+
+  .summary-row {
+    display: flex;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .summary-label {
+    color: rgba(147,197,253,0.8);
+    font-size: 13px;
+    font-weight: 600;
+    min-width: 120px;
+    flex-shrink: 0;
+  }
+
+  .summary-value {
+    color: white;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .tag-badge {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(59,130,246,0.2);
+    border: 1px solid rgba(99,179,237,0.3);
+    color: #93c5fd;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    margin: 2px;
+  }
+
+  .step-page {
+    display: none;
+    animation: fadeSlide 0.4s ease;
+  }
+
+  .step-page.active { display: block; }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .success-check {
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0) rotate(-10deg); opacity: 0; }
+    to { transform: scale(1) rotate(0); opacity: 1; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+  @media (max-width: 640px) {
+    .step-label { display: none; }
+    .type-card { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body class="py-8 px-4">
+
+<div class="max-w-3xl mx-auto">
+
+  <!-- Header -->
+  <div class="text-center mb-10">
+    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4" style="background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(6,182,212,0.3)); border: 1px solid rgba(99,179,237,0.3);">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 19h16a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+      </svg>
+    </div>
+    <h1 class="text-2xl md:text-3xl font-bold text-white mb-2">درخواست خدمات مالی و حسابداری</h1>
+    <p class="text-blue-200 text-sm opacity-70">در چند قدم ساده خدمات مورد نیاز خود را انتخاب کنید</p>
+  </div>
+
+  <!-- Step Indicator -->
+  <div class="glass rounded-2xl p-5 mb-6">
+    <div class="progress-bar mb-4">
+      <div class="progress-fill" id="progressBar" style="width: 20%"></div>
+    </div>
+    <div class="flex items-center justify-between" id="stepIndicator">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- Main Card -->
+  <div class="glass rounded-3xl p-6 md:p-8 shadow-2xl min-h-[400px] flex flex-col">
+
+    <!-- Step 1: Applicant Type -->
+    <div class="step-page active" id="step1">
+      <h2 class="text-xl font-bold text-white mb-2">نوع متقاضی</h2>
+      <p class="text-blue-200 text-sm mb-8 opacity-70">لطفاً یکی از گزینه‌های زیر را انتخاب کنید</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
+        <div class="type-card rounded-2xl p-6 md:p-8 text-center" onclick="selectApplicantType('real', this)">
+          <div class="inline-flex items-center justify-center w-14 h-14 rounded-xl mb-4" style="background: rgba(99,179,237,0.15);">
+            <svg class="w-7 h-7 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          </div>
+          <h3 class="text-white font-bold text-lg mb-1">شخص حقیقی</h3>
+          <p class="text-blue-200 text-xs opacity-60">افراد و کسب‌وکارهای شخصی</p>
+        </div>
+        <div class="type-card rounded-2xl p-6 md:p-8 text-center" onclick="selectApplicantType('legal', this)">
+          <div class="inline-flex items-center justify-center w-14 h-14 rounded-xl mb-4" style="background: rgba(99,179,237,0.15);">
+            <svg class="w-7 h-7 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          </div>
+          <h3 class="text-white font-bold text-lg mb-1">شخص حقوقی</h3>
+          <p class="text-blue-200 text-xs opacity-60">شرکت‌ها و سازمان‌ها</p>
+        </div>
+      </div>
+      <div id="step1Error" class="error-msg text-center">لطفاً نوع متقاضی را انتخاب کنید</div>
+      <div class="flex justify-end mt-auto pt-4">
+        <button class="btn-primary" onclick="nextStep()">مرحله بعد ←</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Company Type (Legal only) -->
+    <div class="step-page" id="step2">
+      <h2 class="text-xl font-bold text-white mb-2">نوع شرکت</h2>
+      <p class="text-blue-200 text-sm mb-6 opacity-70">نوع شرکت یا سازمان خود را مشخص کنید</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+        <div class="type-card rounded-xl p-5 text-center" onclick="selectCompanyType('trading', this)">
+          <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3" style="background: rgba(99,179,237,0.15);">
+            <svg class="w-5 h-5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          </div>
+          <div class="text-white font-semibold text-sm">بازرگانی</div>
+        </div>
+        <div class="type-card rounded-xl p-5 text-center" onclick="selectCompanyType('service', this)">
+          <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3" style="background: rgba(99,179,237,0.15);">
+            <svg class="w-5 h-5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          </div>
+          <div class="text-white font-semibold text-sm">خدماتی</div>
+        </div>
+        <div class="type-card rounded-xl p-5 text-center" onclick="selectCompanyType('production', this)">
+          <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3" style="background: rgba(99,179,237,0.15);">
+            <svg class="w-5 h-5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <div class="text-white font-semibold text-sm">تولیدی</div>
+        </div>
+        <div class="type-card rounded-xl p-5 text-center" onclick="selectCompanyType('distribution', this)">
+          <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3" style="background: rgba(99,179,237,0.15);">
+            <svg class="w-5 h-5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+          </div>
+          <div class="text-white font-semibold text-sm">پخش</div>
+        </div>
+        <div class="type-card rounded-xl p-5 text-center" onclick="selectCompanyType('contractor', this)">
+          <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-3" style="background: rgba(99,179,237,0.15);">
+            <svg class="w-5 h-5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2v16z"/></svg>
+          </div>
+          <div class="text-white font-semibold text-sm">پیمانکاری</div>
+        </div>
+      </div>
+      <div id="step2Error" class="error-msg text-center">لطفاً نوع شرکت را انتخاب کنید</div>
+      <div class="flex justify-between mt-auto pt-4">
+        <button class="btn-secondary" onclick="prevStep()">→ مرحله قبل</button>
+        <button class="btn-primary" onclick="nextStep()">مرحله بعد ←</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Services -->
+    <div class="step-page" id="step3">
+      <h2 class="text-xl font-bold text-white mb-1">خدمات مورد نیاز</h2>
+      <p class="text-blue-200 text-sm mb-5 opacity-70">می‌توانید چند خدمت را همزمان انتخاب کنید</p>
+      <div id="servicesContainer" class="space-y-6 max-h-[420px] overflow-y-auto pl-2"></div>
+      <div id="step3Error" class="error-msg text-center mt-3">لطفاً حداقل یک خدمت انتخاب کنید</div>
+      <div class="flex justify-between mt-6 pt-4">
+        <button class="btn-secondary" onclick="prevStep()">→ مرحله قبل</button>
+        <button class="btn-primary" onclick="nextStep()">مرحله بعد ←</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Contact Info -->
+    <div class="step-page" id="step4">
+      <h2 class="text-xl font-bold text-white mb-2">اطلاعات تماس</h2>
+      <p class="text-blue-200 text-sm mb-6 opacity-70">اطلاعات خود را برای پیگیری درخواست وارد کنید</p>
+      <div id="contactForm" class="space-y-5"></div>
+      <div class="flex justify-between mt-8 pt-4">
+        <button class="btn-secondary" onclick="prevStep()">→ مرحله قبل</button>
+        <button class="btn-primary" onclick="nextStep()">مشاهده خلاصه ←</button>
+      </div>
+    </div>
+
+    <!-- Step 5: Summary -->
+    <div class="step-page" id="step5">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="inline-flex items-center justify-center w-10 h-10 rounded-xl" style="background: rgba(16,185,129,0.2);">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-white">خلاصه درخواست</h2>
+          <p class="text-blue-200 text-xs opacity-70">پیش از ثبت نهایی، اطلاعات خود را بررسی کنید</p>
+        </div>
+      </div>
+      <div id="summaryContent" class="glass rounded-2xl p-5 mb-6"></div>
+      <div class="flex justify-between pt-2">
+        <button class="btn-secondary" onclick="prevStep()">→ ویرایش اطلاعات</button>
+        <button class="btn-submit" onclick="submitForm()">✓ ثبت نهایی درخواست</button>
+      </div>
+    </div>
+
+    <!-- Step 6: Done -->
+    <div class="step-page" id="step6">
+      <div class="text-center py-10">
+        <div class="success-check inline-flex items-center justify-center w-20 h-20 rounded-full mb-6" style="background: linear-gradient(135deg, rgba(16,185,129,0.3), rgba(5,150,105,0.3)); border: 2px solid rgba(16,185,129,0.5);">
+          <svg class="w-10 h-10 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h2 class="text-2xl font-bold text-white mb-3">درخواست شما با موفقیت ثبت شد!</h2>
+        <p class="text-blue-200 opacity-70 mb-8 max-w-sm mx-auto text-sm leading-7">کارشناسان ما در اسرع وقت با شما تماس خواهند گرفت. از اعتماد شما سپاسگزاریم.</p>
+        <button class="btn-primary" onclick="resetForm()">ثبت درخواست جدید</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+const state = {
+  currentStep: 1,
+  applicantType: null,   // 'real' | 'legal'
+  companyType: null,
+  companyTypeName: '',
+  selectedServices: [],
+  contact: {}
+};
+
+// ─── Step config ─────────────────────────────────────────────────────────────
+function getSteps() {
+  if (state.applicantType === 'real') {
+    return [
+      { id: 1, label: 'نوع متقاضی' },
+      { id: 3, label: 'خدمات' },
+      { id: 4, label: 'اطلاعات' },
+      { id: 5, label: 'خلاصه' }
+    ];
+  }
+  return [
+    { id: 1, label: 'نوع متقاضی' },
+    { id: 2, label: 'نوع شرکت' },
+    { id: 3, label: 'خدمات' },
+    { id: 4, label: 'اطلاعات' },
+    { id: 5, label: 'خلاصه' }
+  ];
+}
+
+function getStepIndex() {
+  return getSteps().findIndex(s => s.id === state.currentStep);
+}
+
+function getTotalSteps() { return getSteps().length; }
+
+// ─── Services data ────────────────────────────────────────────────────────────
+const realServices = [
+  {
+    category: 'خدمات مالیاتی',
+    icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>`,
+    items: ['تشکیل پرونده مالیاتی','ثبت‌نام مالیاتی','اظهارنامه مالیاتی','اعتراض مالیاتی','مشاوره مالیاتی']
+  },
+  {
+    category: 'خدمات بانکی و تسهیلات',
+    icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>`,
+    items: ['دریافت وام','طرح توجیهی','مشاوره بانکی']
+  },
+  {
+    category: 'خدمات مالی شخصی',
+    icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+    items: ['برنامه‌ریزی مالی','بودجه‌بندی','مشاوره مالی']
+  },
+  {
+    category: 'سایر',
+    icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>`,
+    items: ['سایر']
+  }
+];
+
+const legalServices = [
+  {
+    category: 'حسابداری',
+    icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 19h16a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>`,
+    items: ['انجام امور حسابداری','تحریر دفاتر قانونی','بستن حساب‌ها','تهیه صورت‌های مالی','استقرار سیستم حسابداری']
+  },
+  {
+    category: 'مالیات',
+    icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>`,
+    items: ['اظهارنامه عملکرد','اظهارنامه ارزش افزوده','معاملات فصلی','دفاع مالیاتی','مشاوره مالیاتی']
+  },
+  {
+    category: 'حقوق و دستمزد',
+    icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>`,
+    items: ['لیست حقوق','لیست بیمه','مالیات حقوق','صدور فیش حقوقی']
+  },
+  {
+    category: 'نرم‌افزار حسابداری',
+    icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>`,
+    items: ['خرید نرم‌افزار حسابداری','ارتقای نرم‌افزار','تمدید پشتیبانی','آموزش نرم‌افزار','مشاوره انتخاب نرم‌افزار']
+  },
+  {
+    category: 'استقرار نرم‌افزار',
+    icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>`,
+    items: ['نصب و راه‌اندازی','طراحی کدینگ حسابداری','انتقال اطلاعات','تعریف فرآیندهای مالی','آموزش کاربران']
+  },
+  {
+    category: 'خدمات مالی مدیریتی',
+    icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>`,
+    items: ['مدیر مالی پاره‌وقت','بودجه‌بندی','تحلیل مالی','کنترل هزینه‌ها','گزارشات مدیریتی']
+  },
+  {
+    category: 'تسهیلات و تأمین مالی',
+    icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+    items: ['طرح توجیهی','اخذ تسهیلات','ارزش‌گذاری شرکت','جذب سرمایه']
+  },
+  {
+    category: 'ثبت و تغییرات شرکت',
+    icon: `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>`,
+    items: ['ثبت شرکت','تغییرات شرکت','افزایش سرمایه','انحلال شرکت']
+  }
+];
+
+const companyNames = {
+  trading: 'شرکت بازرگانی', service: 'شرکت خدماتی',
+  production: 'شرکت تولیدی', distribution: 'شرکت پخش', contractor: 'شرکت پیمانکاری'
+};
+
+// ─── UI Helpers ───────────────────────────────────────────────────────────────
+function renderStepIndicator() {
+  const steps = getSteps();
+  const idx = getStepIndex();
+  const el = document.getElementById('stepIndicator');
+  let html = '';
+  steps.forEach((s, i) => {
+    let dotClass = i < idx ? 'done' : i === idx ? 'active' : 'pending';
+    let icon = i < idx
+      ? `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>`
+      : i + 1;
+    html += `<div class="flex flex-col items-center gap-1">
+      <div class="step-dot ${dotClass}">${icon}</div>
+      <span class="step-label text-xs font-medium ${i <= idx ? 'text-blue-200' : 'text-white opacity-30'}">${s.label}</span>
+    </div>`;
+    if (i < steps.length - 1) {
+      const fill = i < idx ? '100%' : '0%';
+      html += `<div class="step-line mb-5"><div class="step-line-fill" style="width:${fill}"></div></div>`;
+    }
+  });
+  el.innerHTML = html;
+
+  const pct = idx === 0 ? 5 : Math.round(((idx) / (steps.length - 1)) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function showStep(id) {
+  document.querySelectorAll('.step-page').forEach(p => p.classList.remove('active'));
+  document.getElementById('step' + id).classList.add('active');
+  state.currentStep = id;
+  renderStepIndicator();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function clearError(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('show');
+}
+
+function showError(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.add('show');
+}
+
+// ─── Step 1 ───────────────────────────────────────────────────────────────────
+function selectApplicantType(type, el) {
+  state.applicantType = type;
+  document.querySelectorAll('#step1 .type-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  clearError('step1Error');
+}
+
+// ─── Step 2 ───────────────────────────────────────────────────────────────────
+function selectCompanyType(type, el) {
+  state.companyType = type;
+  state.companyTypeName = companyNames[type];
+  document.querySelectorAll('#step2 .type-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  clearError('step2Error');
+}
+
+// ─── Step 3 ───────────────────────────────────────────────────────────────────
+function renderServices() {
+  const data = state.applicantType === 'real' ? realServices : legalServices;
+  const container = document.getElementById('servicesContainer');
+  let html = '';
+  data.forEach(cat => {
+    html += `<div>
+      <div class="category-label flex items-center gap-2">
+        <span class="text-blue-300">${cat.icon}</span>
+        <span>${cat.category}</span>
+      </div>
+      <div class="flex flex-wrap gap-2">`;
+    cat.items.forEach(item => {
+      const sel = state.selectedServices.includes(item) ? 'selected' : '';
+      html += `<div class="service-chip ${sel}" onclick="toggleService('${item}', this)">
+        <div class="chip-check">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        ${item}
+      </div>`;
+    });
+    html += `</div></div>`;
+  });
+  container.innerHTML = html;
+}
+
+function toggleService(name, el) {
+  const idx = state.selectedServices.indexOf(name);
+  if (idx === -1) { state.selectedServices.push(name); el.classList.add('selected'); }
+  else { state.selectedServices.splice(idx, 1); el.classList.remove('selected'); }
+  clearError('step3Error');
+}
+
+// ─── Step 4 ───────────────────────────────────────────────────────────────────
+function renderContactForm() {
+  const isReal = state.applicantType === 'real';
+  const fields = isReal
+    ? [
+        { id: 'fullName', label: 'نام و نام خانوادگی', type: 'text', placeholder: 'مثلاً: علی محمدی', required: true },
+        { id: 'mobile', label: 'شماره موبایل', type: 'tel', placeholder: '09xxxxxxxxx', required: true },
+        { id: 'description', label: 'توضیحات', type: 'textarea', placeholder: 'اطلاعات تکمیلی...' }
+      ]
+    : [
+        { id: 'companyName', label: 'نام شرکت', type: 'text', placeholder: 'نام شرکت', required: true },
+        { id: 'contactName', label: 'نام شخص تماس', type: 'text', placeholder: 'نام و نام خانوادگی', required: true },
+        { id: 'mobile', label: 'شماره موبایل', type: 'tel', placeholder: '09xxxxxxxxx', required: true },
+        { id: 'description', label: 'توضیحات', type: 'textarea', placeholder: 'اطلاعات تکمیلی...' }
+      ];
+
+  const container = document.getElementById('contactForm');
+  let html = '';
+  fields.forEach(f => {
+    const val = state.contact[f.id] || '';
+    html += `<div>
+      <label class="block text-sm font-medium text-blue-200 mb-2">${f.label}${f.required ? ' <span class="text-red-400">*</span>' : ''}</label>`;
+    if (f.type === 'textarea') {
+      html += `<textarea id="${f.id}" class="input-field resize-none" rows="3" placeholder="${f.placeholder}" oninput="saveContact('${f.id}',this.value)">${val}</textarea>`;
+    } else {
+      html += `<input id="${f.id}" type="${f.type}" class="input-field" placeholder="${f.placeholder}" value="${val}" oninput="saveContact('${f.id}',this.value)">`;
+    }
+    html += `<div id="${f.id}Error" class="error-msg">این فیلد الزامی است</div></div>`;
+  });
+  container.innerHTML = html;
+}
+
+function saveContact(id, val) {
+  state.contact[id] = val;
+  clearError(id + 'Error');
+  document.getElementById(id)?.classList.remove('error');
+}
+
+function validateContact() {
+  const isReal = state.applicantType === 'real';
+  const required = isReal ? ['fullName','mobile'] : ['companyName','contactName','mobile'];
+  let valid = true;
+  required.forEach(id => {
+    const el = document.getElementById(id);
+    if (!state.contact[id] || !state.contact[id].trim()) {
+      el?.classList.add('error');
+      showError(id + 'Error');
+      valid = false;
+    }
+  });
+  if (state.contact.mobile) {
+    const mob = state.contact.mobile.trim();
+    if (!/^09\d{9}$/.test(mob)) {
+      document.getElementById('mobile')?.classList.add('error');
+      const errEl = document.getElementById('mobileError');
+      if (errEl) { errEl.textContent = 'شماره موبایل معتبر نیست (مثلاً 09123456789)'; errEl.classList.add('show'); }
+      valid = false;
+    }
+  }
+  return valid;
+}
+
+// ─── Step 5 Summary ───────────────────────────────────────────────────────────
+function renderSummary() {
+  const isReal = state.applicantType === 'real';
+  let html = '';
+
+  // Type
+  html += `<div class="summary-row">
+    <div class="summary-label">نوع متقاضی</div>
+    <div class="summary-value">${isReal ? '👤 شخص حقیقی' : '🏢 شخص حقوقی'}</div>
+  </div>`;
+
+  // Company type
+  if (!isReal && state.companyTypeName) {
+    html += `<div class="summary-row">
+      <div class="summary-label">نوع شرکت</div>
+      <div class="summary-value">${state.companyTypeName}</div>
+    </div>`;
+  }
+
+  // Services
+  html += `<div class="summary-row">
+    <div class="summary-label">خدمات انتخابی</div>
+    <div class="summary-value">${state.selectedServices.map(s => `<span class="tag-badge">${s}</span>`).join('')}</div>
+  </div>`;
+
+  // Contact
+  const c = state.contact;
+  let contactHtml = '';
+  if (isReal) {
+    contactHtml = `<div>${c.fullName || ''}</div><div class="text-blue-300">${c.mobile || ''}</div>`;
+    if (c.description) contactHtml += `<div class="opacity-60 text-sm mt-1">${c.description}</div>`;
+  } else {
+    contactHtml = `<div>${c.companyName || ''}</div><div class="opacity-70">${c.contactName || ''}</div><div class="text-blue-300">${c.mobile || ''}</div>`;
+    if (c.description) contactHtml += `<div class="opacity-60 text-sm mt-1">${c.description}</div>`;
+  }
+  html += `<div class="summary-row">
+    <div class="summary-label">اطلاعات تماس</div>
+    <div class="summary-value">${contactHtml}</div>
+  </div>`;
+
+  document.getElementById('summaryContent').innerHTML = html;
+}
+
+// ─── Navigation ───────────────────────────────────────────────────────────────
+function nextStep() {
+  // Step 1 validate
+  if (state.currentStep === 1) {
+    if (!state.applicantType) { showError('step1Error'); return; }
+    if (state.applicantType === 'real') {
+      state.selectedServices = [];
+      renderServices();
+      showStep(3);
+    } else {
+      showStep(2);
+    }
+    return;
+  }
+
+  if (state.currentStep === 2) {
+    if (!state.companyType) { showError('step2Error'); return; }
+    state.selectedServices = [];
+    renderServices();
+    showStep(3);
+    return;
+  }
+
+  if (state.currentStep === 3) {
+    if (state.selectedServices.length === 0) { showError('step3Error'); return; }
+    renderContactForm();
+    showStep(4);
+    return;
+  }
+
+  if (state.currentStep === 4) {
+    if (!validateContact()) return;
+    renderSummary();
+    showStep(5);
+    return;
+  }
+}
+
+function prevStep() {
+  if (state.currentStep === 5) { renderContactForm(); showStep(4); return; }
+  if (state.currentStep === 4) { renderServices(); showStep(3); return; }
+  if (state.currentStep === 3) {
+    if (state.applicantType === 'real') showStep(1);
+    else showStep(2);
+    return;
+  }
+  if (state.currentStep === 2) showStep(1);
+}
+
+async function submitForm() {
+  const btn = document.querySelector('#step5 .btn-submit');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="inline-flex items-center gap-2">
+    <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+    </svg>
+    در حال ارسال...
+  </span>`;
+
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyeU7xGKhmkeJqkrG7ltiwDtgB6_dxxKxdo3eUwc8N2uZIuj9bxXnNIODAq-YmGITbk/exec';
+
+  const payload = {
+    applicantType: state.applicantType === 'real' ? 'شخص حقیقی' : 'شخص حقوقی',
+    companyTypeName: state.companyTypeName || '',
+    selectedServices: state.selectedServices,
+    contact: state.contact
+  };
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    // no-cors means we can't read response, but if no error = sent
+    showStep(6);
+    document.getElementById('progressBar').style.width = '100%';
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerHTML = '✓ ثبت نهایی درخواست';
+    showToast('خطا در ارسال اطلاعات. لطفاً دوباره تلاش کنید.');
+  }
+}
+
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#ef4444;color:white;padding:12px 24px;border-radius:12px;font-size:14px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.4);transition:opacity 0.3s';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.opacity = '0'; }, 4000);
+}
+
+function resetForm() {
+  state.currentStep = 1;
+  state.applicantType = null;
+  state.companyType = null;
+  state.companyTypeName = '';
+  state.selectedServices = [];
+  state.contact = {};
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  showStep(1);
+  document.getElementById('progressBar').style.width = '5%';
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+renderStepIndicator();
+</script>
+</body>
+</html>
